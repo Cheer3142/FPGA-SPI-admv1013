@@ -1,0 +1,14 @@
+
+State Machine - |PortMapModule|RdAddrLst:u_RdAddrLst|rState
+Name rState.StShift rState.StWait rState.StLoad rState.StIdle 
+rState.StIdle 0 0 0 0 
+rState.StLoad 0 0 1 1 
+rState.StWait 0 1 0 1 
+rState.StShift 1 0 0 1 
+
+State Machine - |PortMapModule|SPICom:u_SPICOM|rState
+Name rState.StInActive rState.StData rState.StRdWr rState.StIdle 
+rState.StIdle 0 0 0 0 
+rState.StRdWr 0 0 1 1 
+rState.StData 0 1 0 1 
+rState.StInActive 1 0 0 1 
