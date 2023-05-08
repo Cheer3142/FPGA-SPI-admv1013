@@ -7,8 +7,8 @@ Microwave Up-Down converter Model:
 admv1013-evalz, admv1014-evalz
 
 V.0.01
-- Add SPI main entity
-- Add dump of register (RdAddrLst)
+- SPI main entity
+- Dump of array (RdAddrLst)
 - Add port map module to map all port (Overview of this project)
 
 Currently working:
