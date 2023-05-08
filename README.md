@@ -1,7 +1,10 @@
 # FPGA-SPI-admv1013
 
-The project is the use case of FPGA to work as the master in SPI communication.
-In this project components is 1 master (FPGA) and 2 slaves (Microwave Up-Down converter).
+The project will use FPGA to work as the master in SPI communication.
+Hardwares in this project are 1 master (FPGA) and 2 slaves (Microwave Up-Down converter).
+
+Microwave Up-Down converter Model:
+admv1013-evalz, admv1014-evalz
 
 V.0.01
 - Add SPI main entity
@@ -10,5 +13,6 @@ V.0.01
 
 Currently working:
 1. Create testbench >>  to check the transmission data
-2. Signal Tap 
+2. Signal Tap
+
 
