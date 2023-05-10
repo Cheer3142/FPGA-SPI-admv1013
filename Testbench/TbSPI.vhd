@@ -15,10 +15,10 @@ USE STD.TEXTIO.ALL;
 ----------------------------------------------------------------------------------
 
 entity TbSPI is
-end entity;
+end entity TbSPI;
 
 
-architecture RTL of TbSPI is
+architecture Testbench of TbSPI is
 ----------------------------------------------------------------------------------
 -- Constant declaration
 ----------------------------------------------------------------------------------
@@ -29,83 +29,187 @@ architecture RTL of TbSPI is
 -------------------------------------------------------------------------
 	Component SPICom Is
 	Port(
+		Clk      : in  std_logic;
+        RstB     : in  std_logic;
 		Address	 : in  std_logic_vector( 5 downto 0 );	-- Register Address
 		
 		RdWr	 : in  std_logic;						-- R/W
+		WrData	 : in  std_logic_vector( 15 downto 0 );	
 		RdData	 : out std_logic_vector( 15 downto 0 );	
 		RdDataEn : out std_logic;
 		
 		Parload	 : in  std_logic;    					-- To load command to rData
 		Busy	 : out std_logic;
-		CsInB	 : in  std_logic_vector( 1 downto 0)
+		
+		-- SPI
+        SClk     : out std_logic;						-- Output Clock
+        MOSI     : out std_logic;
+        MISO     : in  std_logic;
+		CsInB	 : in  std_logic_vector( 1 downto 0);
+		CsOutB	 : out std_logic_vector( 1 downto 0)
 	);
 	End Component SPICom;
 	
-	Component RdAddrLst Is
-	Port(
-		Address	 : out std_logic_vector( 5 downto 0 );	-- Register Address
-		
-		RdWr	 : out std_logic;						-- R/W
-		RdData	 : in  std_logic_vector( 15 downto 0 );	
-		RdDataEn : in  std_logic;
-		
-		Parload	 : out std_logic;    					-- To load command to rData
-		Busy	 : in  std_logic;
-		CsInB	 : out std_logic_vector( 1 downto 0)
-	);
-	End Component RdAddrLst;
 ----------------------------------------------------------------------------------
 -- Signal declaration
 ----------------------------------------------------------------------------------
-	-- internal Signal (C)
-	Signal rAddress			: std_logic_vector( 5 downto 0 );
-	signal rRdWr			: std_logic; 
-	Signal rRdData			: std_logic_vector( 15 downto 0 );	
-	Signal rRdDataEn		: std_logic;
+	signal	TM			: integer	range 0 to 65535;
 	
-	signal rParload			: std_logic;
-	Signal rBusy			: std_logic;
-	Signal rCsInB			: std_logic_vector( 1 downto 0 );
+	signal	RstB		: std_logic;
+	signal	Clk			: std_logic;
+	signal  Address		: std_logic_vector( 5 downto 0 );
+	
+	signal	RdWr		: std_logic;
+	signal	RdDataEn	: std_logic;
+	signal	WrData	 	: std_logic_vector( 15 downto 0 );	
+	signal	RdData	 	: std_logic_vector( 15 downto 0 );	
+	
+	signal	Parload		: std_logic;
+	signal	Busy		: std_logic;
+	
+	signal	SClk		: std_logic;
+	signal	MOSI		: std_logic;
+	signal	MISO		: std_logic;
+	signal	CsInB		: std_logic_vector( 1 downto 0);
+	signal	CsOutB		: std_logic_vector( 1 downto 0);
 	
 begin
 
 ----------------------------------------------------------------------------------
--- DFF 
+-- Concurrent signal
 ----------------------------------------------------------------------------------
+	
+	u_RstB : Process
+	Begin
+		RstB	<= '0';
+		wait for 20*tClk;
+		RstB	<= '1';
+		wait;
+	End Process u_RstB;
+
+	u_Clk : Process
+	Begin
+		Clk		<= '1';
+		wait for tClk/2;
+		Clk		<= '0';
+		wait for tClk/2;
+	End Process u_Clk;
+	
 	u_SPICom : SPICom 
 	Port map
 	(
-		Address	 => rAddress,
+		RstB		=> RstB			,	
+		Clk			=> Clk			,
+		Address	 	=> Address		,
 		
-		RdWr	 => rRdWr,
-		RdData	 => rRdData,
-		RdDataEn => rRdDataEn,	
+		RdWr	 	=> RdWr			,
+		RdData	 	=> RdData		,
+		WrData		=> WrData		,
+		RdDataEn 	=> RdDataEn		,	
 		
-		Parload	 => rParload,
-		Busy	 => rBusy,
-		CsInB	 => rCsInB
+		Parload	 	=> Parload		,
+		Busy	 	=> Busy			,
+
+
+		SClk     	=> SClk			,			-- Output Clock
+        MOSI     	=> MOSI			,
+        MISO     	=> MISO			,
+		CsOutB	 	=> CsOutB		,
+		CsInB	 	=> CsInB
 	);
 
-	u_RdAddrLst : RdAddrLst 
-	Port map
-	(
-		Address	 => rAddress,
-		
-		RdWr	 => rRdWr,
-		RdData	 => rRdData,
-		RdDataEn => rRdDataEn,	
-		
-		Parload	 => rParload,
-		Busy	 => rBusy,
-		CsInB	 => rCsInB
-	);
+-------------------------------------------------------------------------
+-- Testbench
+-------------------------------------------------------------------------
+	
+	u_Test : Process
+	variable	iSerData	: std_logic_vector( 9 downto 0 );
+	Begin
+		-------------------------------------------
+		-- TM=0 : Reset
+		-------------------------------------------
+		TM <= 0; wait for 1 ns;
+		Report "TM=" & integer'image(TM); 
+		SerDataIn	<= '1';
+		RxFfFull	<= '0';
+		wait for 30*tClk;
 
+		-------------------------------------------
+		-- TM=1 : Check counter value
+		-------------------------------------------	
+		TM <= 1; wait for 1 ns;
+		Report "TM=" & integer'image(TM); 
+
+		wait until rising_edge(Clk);
+		iSerData 	:= '1'&x"35"&'0';
+		For i in 0 to 9 loop
+			SerDataIn	<= iSerData(0);
+			wait for 868*tClk;
+			wait until rising_edge(Clk);
+			iSerData	:= '1' & iSerData(9 downto 1);
+		End loop;
+		wait for 30*tClk;
+		
+		-------------------------------------------
+		-- TM=2 : Stop = 0
+		-------------------------------------------	
+		TM <= 2; wait for 1 ns;
+		Report "TM=" & integer'image(TM); 
+
+		wait until rising_edge(Clk);
+		iSerData 	:= '0'&x"53"&'0';
+		For i in 0 to 9 loop
+			SerDataIn	<= iSerData(0);
+			wait for 868*tClk;
+			wait until rising_edge(Clk);
+			iSerData	:= '1' & iSerData(9 downto 1);
+		End loop;
+		wait for 30*tClk;
+		
+		-------------------------------------------
+		-- TM=3 : Full = 1
+		-------------------------------------------	
+		TM <= 3; wait for 1 ns;
+		Report "TM=" & integer'image(TM); 
+		RxFfFull	<= '1';
+		wait until rising_edge(Clk);
+		iSerData 	:= '1'&x"35"&'0';
+		For i in 0 to 9 loop
+			SerDataIn	<= iSerData(0);
+			wait for 868*tClk;
+			wait until rising_edge(Clk);
+			iSerData	:= '1' & iSerData(9 downto 1);
+		End loop;
+		wait for 30*tClk;
+		
+		-------------------------------------------
+		-- TM=4 : Reset & Normal
+		-------------------------------------------	
+		TM <= 4; wait for 1 ns;
+		Report "TM=" & integer'image(TM); 
+		
+		RxFfFull	<= '0';
+		wait until rising_edge(Clk);
+		iSerData 	:= '1'&x"53"&'0';
+		For i in 0 to 9 loop
+			SerDataIn	<= iSerData(0);
+			wait for 868*tClk;
+			wait until rising_edge(Clk);
+			iSerData	:= '1' & iSerData(9 downto 1);
+		End loop;
+		wait for 30*tClk;
+		wait for 5000*tClk;
+		
+		
+		--------------------------------------------------------
+		TM <= 255; wait for 1 ns;
+		wait for 20*tClk;
+		Report "##### End Simulation #####" Severity Failure;		
+		wait;
+		
+	End Process u_Test;
 	
-----------------------------------------------------------------------------------
--- Output assignment
-----------------------------------------------------------------------------------
-	
-end architecture RTL;
+end architecture Testbench;
 
 
 
