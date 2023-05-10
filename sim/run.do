@@ -12,7 +12,7 @@ vcom -work work ../hdl/SPICom.vhd
 #--------------------------------#
 vcom -work work ../Testbench/TbSPI.vhd
 
-vsim -t 100ps -novopt work.SPICom
+vsim -t 100ps -novopt work.TbSPI
 view wave
 
 do wave.do
