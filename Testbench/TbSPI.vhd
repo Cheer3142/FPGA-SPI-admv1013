@@ -63,7 +63,7 @@ architecture RTL of TbSPI is
 	Signal rRdData			: std_logic_vector( 15 downto 0 );	
 	Signal rRdDataEn		: std_logic;
 	
-	signal rParload			: std_logic; 
+	signal rParload			: std_logic;
 	Signal rBusy			: std_logic;
 	Signal rCsInB			: std_logic_vector( 1 downto 0 );
 	
@@ -72,7 +72,7 @@ begin
 ----------------------------------------------------------------------------------
 -- DFF 
 ----------------------------------------------------------------------------------
-	u_SPICOM : SPICom 
+	u_SPICom : SPICom 
 	Port map
 	(
 		Address	 => rAddress,
