@@ -39,7 +39,7 @@ architecture RTL of SPICom is
 ----------------------------------------------------------------------------------
 -- Constant declaration
 ----------------------------------------------------------------------------------
-	Constant cBuadCnt	: integer := 999; -- use N-1
+	Constant cBuadCnt	: integer := 500; -- use (N)*2 = SClk 
 
 ----------------------------------------------------------------------------------
 -- Signal declaration
@@ -79,27 +79,31 @@ begin
 				case ( rState ) is
 					when StIdle		=>
 						if ( Parload = '1' ) then
-							rState	<= StRdWr;
+							rState		<= StRdWr;
 						else
-							rState	<= StIdle;
+							rState		<= StIdle;
 						end if;
 					
 					when StRdWr	=>
 						if ( rSClk( 1 downto 0 ) = "10" ) then
-							rState	<= StData;
-						else
-							rState	<= StRdWr;
+							rState		<= StData;
+						else	
+							rState		<= StRdWr;
 						end if;
 						
 					when StData	=>
-						if ( rDataCnt( 4 downto 0 ) = "10110" ) then -- 16 + 6 = 22
-							rState	<= StInActive;
+						if ( rDataCnt( 4 downto 0 ) = "10110" and rSClk( 1 downto 0 ) = "10") then -- 16 + 6 = 22
+							rState		<= StInActive;
 						else
-							rState	<= StData;
+							rState		<= StData;
 						end if;
 					
 					when StInActive =>
-						rState		<= StIdle;
+						if ( rSClk( 1 downto 0 ) = "01" ) then
+							rState		<= StIdle;
+						else
+							rState		<= StInActive;
+						end if;
 					
 				end case;
 			end if;
@@ -210,14 +214,16 @@ begin
     -- MOSI generation process
     u_rMOSI : process (Clk) is
     begin
-		if ( rSClk( 1 downto 0 ) = "10" ) then
+		if ( rising_edge(Clk) ) then
 			if ( RstB = '0' ) then
-				rMOSI			<= '0';
+				rMOSI	 			<= '0';
 			else
-				if ( rState /= StIdle ) then
-					rMOSI 		<= rData(22);					
-				else
-					rMOSI		<= '0';
+				if ( rSClk( 1 downto 0 ) = "10" ) then
+					if ( rState /= StIdle ) then
+						rMOSI 		<= rData(22);					
+					else
+						rMOSI		<= '0';
+					end if;
 				end if;
 			end if;
 		end if;
@@ -226,26 +232,28 @@ begin
     -- MISO generation process
     u_rMISO : process (Clk) is
     begin
-		if ( rSClk( 1 downto 0 ) = "10" ) then
+		if ( rising_edge(Clk) ) then
 			rMISO 	<= MISO;
 		end if;
     end process u_rMISO;
 	
 	u_rRdData : process (Clk) is
 	begin
-		if ( rSClk( 1 downto 0 ) = "10" ) then
+		if ( rising_edge(Clk) ) then
 			if ( RstB = '0' ) then
-				rRdData( 15 downto 0 )				<= (others=>'0');
+				rRdData( 15 downto 0 )					<= (others=>'0');
 			else
-				if ( rState = StData ) then
-					if ( rRdWr = '1' ) then
-						rRdData(0)					<= rMISO;
-						rRdData( 15 downto 1 )		<= rRdData( 14 downto 0 );
+				if ( rSClk( 1 downto 0 ) = "10" ) then
+					if ( rState = StData ) then
+						if ( rRdWr = '1' ) then
+							rRdData(0)					<= rMISO;
+							rRdData( 15 downto 1 )		<= rRdData( 14 downto 0 );
+						else
+							rRdData( 15 downto 0 )		<= (others=>'0');
+						end if;
 					else
-						rRdData( 15 downto 0 )		<= (others=>'0');
+						rRdData( 15 downto 0 )			<= rRdData( 15 downto 0 );
 					end if;
-				else
-					rRdData( 15 downto 0 )			<= (others=>'0');
 				end if;
 			end if;
 		end if;
@@ -253,13 +261,17 @@ begin
 	
 	u_rRdDataEn : process (Clk) is
 	begin
-		if ( rSClk( 1 downto 0 ) = "01" ) then
+		if ( rising_edge(Clk) ) then
 			if ( RstB = '0' ) then
 				rRdDataEn 			<= '0';
 			else
-				if ( rState = StInActive ) then
-					if ( rRdWr = '1' ) then
-						rRdDataEn				<= '1';
+				if ( rSClk( 1 downto 0 ) = "01" ) then
+					if ( rState = StInActive ) then
+						if ( rRdWr = '1' ) then
+							rRdDataEn				<= '1';
+						else
+							rRdDataEn				<= '0';
+						end if;
 					else
 						rRdDataEn				<= '0';
 					end if;

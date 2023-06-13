@@ -60,7 +60,7 @@ architecture RTL of RdAddrLst is
 	);
 	signal rState		: StateType := StIdle;
 	signal rDump		: std_logic_vector( 23 downto 0 );
-	Signal rParload		: std_logic;
+	Signal rParload		: std_logic_vector( 1 downto 0 );
 	Signal rCsInB		: std_logic_vector( 1 downto 0 );
 	
 	
@@ -79,13 +79,17 @@ begin
 				case (rState) is
 					when StIdle =>
 						if ( rDump = x"000000" ) then
-							rState	<= StIdle;
+							rState		<= StIdle;
 						else 
-							rState	<= StLoad;
+							rState		<= StLoad;
 						end if;
 						
 					when StLoad =>
-						rState <= StWait;
+						if ( rParload(1) = '1' ) then
+							rState 		<= StWait;
+						else
+							rState		<= StLoad;
+						end if;
 						
 					when StWait =>
 						if ( Busy = '0' ) then
@@ -127,13 +131,14 @@ begin
 	begin
 		if ( rising_edge(Clk) ) then
 			if ( RstB = '0' ) then
-				rParload		<= '0';
+				rParload( 1 downto 0 ) 		<= "00";
 			else
 				if ( rState = StLoad ) then
-					rParload 	<= '1';
+					rParload(0) 	<= not rParload(0);
 				else
-					rParload	<= '0';
+					rParload(0)		<= '0';
 				end if;
+				rParload(1)			<= rParload(0); 
 			end if;
 		end if;
 	end process u_rParload;
@@ -142,7 +147,7 @@ begin
 -- Output assignment
 ----------------------------------------------------------------------------------
 	Address( 5 downto 0 )	<= rDump( 23 downto 18 );
-	Parload					<= rParload;
+	Parload					<= rParload(0);
 	RdWr					<= cRdWr;
 	CsInB					<= cCsInB;
 	

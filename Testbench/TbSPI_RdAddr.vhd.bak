@@ -50,6 +50,27 @@ architecture Testbench of TbSPI is
 	);
 	End Component SPICom;
 	
+	Component RdAddrLst is
+    port (
+		Clk      : in  std_logic;
+		RstB     : in  std_logic;
+		Address	 : out std_logic_vector( 5 downto 0 );	-- Register Address
+		
+		RdWr	 : out std_logic;						-- R/W
+		RdData	 : in  std_logic_vector( 15 downto 0 );	
+		RdDataEn : in  std_logic;
+		
+		Parload	 : out std_logic;    					-- To load command to rData
+		Busy	 : in  std_logic;
+		
+		-- SPI
+		CsInB	 : out std_logic_vector( 1 downto 0)
+    );
+	End Component RdAddrLst;
+	
+	
+end entity;
+	
 ----------------------------------------------------------------------------------
 -- Signal declaration
 ----------------------------------------------------------------------------------
@@ -118,6 +139,24 @@ begin
 		CsInB	 	=> CsInB
 	);
 	
+	
+	u_RdAddrLst : RdAddrLst 
+	Port map
+	(
+		RstB	 => RstB		,	
+		Clk		 => Clk			,
+		Address	 => Address		,
+		
+		RdWr	 => RdWr		,
+		RdData	 => RdData		,
+		RdDataEn => RdDataEn	,	
+		
+		Parload	 => Parload		,
+		Busy	 => Busy		,
+		
+		CsInB	 => CsInB
+	);
+	
 
 -------------------------------------------------------------------------
 -- Testbench
@@ -136,51 +175,51 @@ begin
 		-------------------------------------------
 		-- TM=1 : MISO
 		-------------------------------------------	
-		TM <= 1; wait for 1 ns;
-		Report "TM=" & integer'image(TM); 
-		Parload		<= '1';
-		RdWr		<= '1';
-		Address		<= "010011";
-		CsInB		<= "10";
-		wait until rising_edge(Clk);
-		Parload		<= '0';
-		wait until rising_edge(Clk);
-		wait for 7*1000*tClk;
+		-- TM <= 1; wait for 1 ns;
+		-- Report "TM=" & integer'image(TM); 
+		-- Parload		<= '1';
+		-- RdWr		<= '1';
+		-- Address		<= "010011";
+		-- CsInB		<= "10";
+		-- wait until rising_edge(Clk);
+		-- Parload		<= '0';
+		-- wait until rising_edge(Clk);
+		-- wait for 7*1000*tClk;
 		
-		iSerData 	:= x"1A35";
-		For i in 0 to 15 loop
-			MISO		<= iSerData(15);
-			wait for 1000*tClk;
-			wait until rising_edge(Clk);
-			iSerData	:=  iSerData(14 downto 0) & '1';
-		End loop;
-		wait for 30*tClk;
-		wait for 1000*tClk;
+		-- iSerData 	:= x"1A35";
+		-- For i in 0 to 15 loop
+			-- MISO		<= iSerData(15);
+			-- wait for 1000*tClk;
+			-- wait until rising_edge(Clk);
+			-- iSerData	:=  iSerData(14 downto 0) & '1';
+		-- End loop;
+		-- wait for 30*tClk;
+		-- wait for 1000*tClk;
 		
+		-- -- -------------------------------------------
+		-- -- TM=2 : MISO again
 		-- -------------------------------------------
-		-- TM=2 : MISO again
-		-------------------------------------------
-		TM <= 2; wait for 1 ns;
-		Report "TM=" & integer'image(TM);
-		wait until rising_edge(Clk);
-		Parload		<= '1';
-		RdWr		<= '1';
-		Address		<= "010011";
-		CsInB		<= "01";
-		wait until rising_edge(Clk);
-		Parload		<= '0';
-		wait until rising_edge(Clk);
-		wait for 7*1000*tClk;
+		-- TM <= 2; wait for 1 ns;
+		-- Report "TM=" & integer'image(TM);
+		-- wait until rising_edge(Clk);
+		-- Parload		<= '1';
+		-- RdWr		<= '1';
+		-- Address		<= "010011";
+		-- CsInB		<= "01";
+		-- wait until rising_edge(Clk);
+		-- Parload		<= '0';
+		-- wait until rising_edge(Clk);
+		-- wait for 7*1000*tClk;
 		
-		iSerData 	:= x"5AF2";
-		For i in 0 to 15 loop
-			MISO		<= iSerData(15);
-			wait for 1000*tClk;
-			wait until rising_edge(Clk);
-			iSerData	:=  iSerData(14 downto 0) & '1';
-		End loop;
-		wait for 30*tClk;
-		wait for 1000*tClk;
+		-- iSerData 	:= x"5AF2";
+		-- For i in 0 to 15 loop
+			-- MISO		<= iSerData(15);
+			-- wait for 1000*tClk;
+			-- wait until rising_edge(Clk);
+			-- iSerData	:=  iSerData(14 downto 0) & '1';
+		-- End loop;
+		-- wait for 30*tClk;
+		-- wait for 1000*tClk;
 		
 		-- -------------------------------------------
 		-- -- TM=3 : Full = 1
@@ -213,9 +252,11 @@ begin
 			-- wait until rising_edge(Clk);
 			-- iSerData	:= '1' & iSerData(9 downto 1);
 		-- End loop;
+		wait for 30*tClk;
+		wait for 4*24*1000*tClk;
 		
 		
-		wait for 3000*tClk;	
+		
 		--------------------------------------------------------
 		TM <= 255; wait for 1 ns;
 		wait for 20*tClk;
