@@ -11,7 +11,7 @@ use IEEE.std_logic_unsigned.all;
 -- the address and data fields are organized MSB first and end with
 -- the LSB. For a write, set the first bit to 0. For a read, set the first bit to 1
 -- R(1)/W(0) + A( 5 to 0 ) + Data ( 15 to 0 )
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------- */ */ */ */
 
 entity PortMapModule is
 	Port

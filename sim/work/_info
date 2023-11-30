@@ -9,7 +9,7 @@ z2
 cModel Technology
 Z0 dC:/Users/Optics Lab 2/Documents/Cheer/FPGA/Me/FPGA-SPI-admv1013/sim
 Eportmapmodule
-Z1 w1683685048
+Z1 w1701054204
 Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
 Z3 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
 Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
@@ -23,9 +23,9 @@ VNL72BRKcHlPXDWCVG>o6n1
 !s100 iiSUS1aFz=Di``d4D`GSc2
 Z8 OV;C;10.5b;63
 32
-Z9 !s110 1684489095
+Z9 !s110 1701150981
 !i10b 1
-Z10 !s108 1684489095.000000
+Z10 !s108 1701150981.000000
 Z11 !s90 -reportprogress|300|-work|work|../hdl/PortMapModule.vhd|
 Z12 !s107 ../hdl/PortMapModule.vhd|
 !i113 1
@@ -68,9 +68,9 @@ R8
 32
 R9
 !i10b 1
-R10
-Z18 !s90 -reportprogress|300|-work|work|../hdl/RdAddrLst.vhd|
-Z19 !s107 ../hdl/RdAddrLst.vhd|
+Z18 !s108 1701150980.000000
+Z19 !s90 -reportprogress|300|-work|work|../hdl/RdAddrLst.vhd|
+Z20 !s107 ../hdl/RdAddrLst.vhd|
 !i113 1
 R13
 R14
@@ -88,32 +88,32 @@ R8
 32
 R9
 !i10b 1
-R10
 R18
 R19
+R20
 !i113 1
 R13
 R14
 Espicom
-Z20 w1684480182
+Z21 w1684480182
 R2
 R3
 R4
 R5
 R0
-Z21 8../hdl/SPICom.vhd
-Z22 F../hdl/SPICom.vhd
+Z22 8../hdl/SPICom.vhd
+Z23 F../hdl/SPICom.vhd
 l0
 L14
 VSgMSH58hFlXkS5VEE[Nfi2
 !s100 RUGOZh;?VU4ZOG8=hcLIb0
 R8
 32
-R9
+Z24 !s110 1701150980
 !i10b 1
-R10
-Z23 !s90 -reportprogress|300|-work|work|../hdl/SPICom.vhd|
-Z24 !s107 ../hdl/SPICom.vhd|
+R18
+Z25 !s90 -reportprogress|300|-work|work|../hdl/SPICom.vhd|
+Z26 !s107 ../hdl/SPICom.vhd|
 !i113 1
 R13
 R14
@@ -129,23 +129,23 @@ V<kHd4o0_>GI:S3mmAhR[h2
 !s100 9Qfj_UGHX<^YmBXN>g^4c3
 R8
 32
-R9
-!i10b 1
-R10
-R23
 R24
+!i10b 1
+R18
+R25
+R26
 !i113 1
 R13
 R14
 Etbspi
-Z25 w1684489091
+Z27 w1684489091
 R2
 R3
 R4
 R5
 R0
-Z26 8../Testbench/TbSPI_RdAddr.vhd
-Z27 F../Testbench/TbSPI_RdAddr.vhd
+Z28 8../Testbench/TbSPI_RdAddr.vhd
+Z29 F../Testbench/TbSPI_RdAddr.vhd
 l0
 L17
 VLOJH6R[C;YV_b:o4fb:Ui1
@@ -155,8 +155,8 @@ R8
 R9
 !i10b 1
 R10
-Z28 !s90 -reportprogress|300|-work|work|../Testbench/TbSPI_RdAddr.vhd|
-Z29 !s107 ../Testbench/TbSPI_RdAddr.vhd|
+Z30 !s90 -reportprogress|300|-work|work|../Testbench/TbSPI_RdAddr.vhd|
+Z31 !s107 ../Testbench/TbSPI_RdAddr.vhd|
 !i113 1
 R13
 R14
@@ -165,18 +165,18 @@ R2
 R3
 R4
 R5
-Z30 DEx4 work 5 tbspi 0 22 LOJH6R[C;YV_b:o4fb:Ui1
+Z32 DEx4 work 5 tbspi 0 22 LOJH6R[C;YV_b:o4fb:Ui1
 l101
 L21
-VBfzIZHBkj?V2C4km>S6kR0
-!s100 QQ9[Kf_Y]hE04IgMZj2932
+Z33 VBfzIZHBkj?V2C4km>S6kR0
+Z34 !s100 QQ9[Kf_Y]hE04IgMZj2932
 R8
 32
 R9
 !i10b 1
 R10
-R28
-R29
+R30
+R31
 !i113 1
 R13
 R14
